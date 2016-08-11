@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Polską wersję językową dodał kinsl4yer 11/08/2016
+
 # Copyright 2013 BrewPi
 # This file is part of BrewPi.
 
