@@ -30,7 +30,7 @@
 
 # Make sure only root can run our script
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root: sudo ./install.sh" 1>&2
+   echo "Ten skrypt musi zostać włączony z uprawnieniami administratora: sudo ./install.sh" 1>&2
    exit 1
 fi
 
@@ -41,7 +41,7 @@ warn() {
   local fmt="$1"
   command shift 2>/dev/null
   echo -e "$fmt\n" "${@}"
-  echo -e "\n*** ERROR ERROR ERROR ERROR ERROR ***\n----------------------------------\nSee above lines for error message\nSetup NOT completed\n"
+  echo -e "\n*** BŁĄD BŁĄD BŁĄD BŁĄD BŁĄD***\n----------------------------------\nSprawdź powyższe wiersze w celu znalezienia komunikatu błędu\nInstalacja NIE ZOSTAŁA ukończona\n"
 }
 
 die () {
@@ -59,25 +59,25 @@ exec 2>&1
 ############
 ### Check for network connection
 ###########
-echo -e "\nChecking for Internet connection..."
+echo -e "\nSprawdzanie połączenia Internetowego..."
 ping -c 3 github.com &> /dev/null
 if [ $? -ne 0 ]; then
     echo "------------------------------------"
-    echo "Could not ping github.com. Are you sure you have a working Internet connection?"
-    echo "Installer will exit, because it needs to fetch code from github.com"
+    echo "Nie udało się połączyć z github.com. Czy połączenie z Internetem jest aktywne?"
+    echo "Instalator zostanie wyłączony, ponieważ nie udało mu się pobrać danych z repozytorium znajdującym się na github.com"
     exit 1    
 fi
-echo -e "Success!\n"
+echo -e "Nawiązano połączenie!\n"
 
 ############
 ### Check whether installer is up-to-date
 ############
-echo -e "\nChecking whether this script is up to date...\n"
+echo -e "\nSprawdzanie aktualizacji...\n"
 unset CDPATH
 myPath="$( cd "$( dirname "${BASH_SOURCE[0]}")" && pwd )"
 bash "$myPath"/update-tools-repo.sh
 if [ $? -ne 0 ]; then
-    echo "The update script was not up-to-date, but it should have been updated. Please re-run install.sh."
+    echo "Skrypt aktualizacji nie był aktualny, ale powinien już zostać zaktualizowany. Uruchom jeszcze raz skrypt install.sh."
     exit 1
 fi
 
@@ -85,17 +85,17 @@ fi
 ############
 ### Install required packages
 ############
-echo -e "\n***** Installing/updating required packages... *****\n"
+echo -e "\n***** Instalacja/aktualizacja niezbędnych pakietów... *****\n"
 lastUpdate=$(stat -c %Y /var/lib/apt/lists)
 nowTime=$(date +%s)
 if [ $(($nowTime - $lastUpdate)) -gt 604800 ] ; then
-    echo "last apt-get update was over a week ago. Running apt-get update before updating dependencies"
+    echo "Ostatnie wykonanie aktualizacji 'apt-get update' miało miejsce ponad tydzień temu. Uruchamianie 'apt-get update' przed aktualizacją zależności"
     sudo apt-get update||die
 fi
 sudo apt-get install -y apache2 libapache2-mod-php5 php5-cli php5-common php5-cgi php5 git-core build-essential python-dev python-pip pastebinit || die
-echo -e "\n***** Installing/updating required python packages via pip... *****\n"
+echo -e "\n***** Instalacja/aktualizacja niezbędnych pakietów python poprzez pip(package manager)... *****\n"
 sudo pip install pyserial psutil simplejson configobj gitpython --upgrade
-echo -e "\n***** Done processing BrewPi dependencies *****\n"
+echo -e "\n***** Ukończono przetwarzanie zależności BrewPi *****\n"
 
 
 ############
@@ -107,23 +107,23 @@ free=$(df /home | grep -vE '^Filesystem|tmpfs|cdrom|none' | awk '{ print $4 }')
 free_readable=$(df -H /home | grep -vE '^Filesystem|tmpfs|cdrom|none' | awk '{ print $4 }')
 
 if [ "$free" -le "512000" ]; then
-    echo -e "\nDisk usage is $free_percentage, free disk space is $free_readable"
-    echo "Not enough space to continue setup. Installing BrewPi requires at least 512mb free space"
-    echo "Did you forget to expand your root partition? To do so run 'sudo raspi-config', expand your root partition and reboot"
+    echo -e "\nZyżycie dysku wynosi $free_percentage, dostępna przestrzeń to $free_readable"
+    echo "Brak wystarczającej przestrzeni do kontynuowania instalacji. Instalacja BrewPi wymaga co najmniej 512mb dostępnej przestrzeni dyskowej"
+    echo "Czy partycja administratora została rozszerzona? Aby ją rozszerzyć, użyj polecenia 'sudo raspi-config', następnie rozszerz partycję administratora i zrestartuj system"
     exit 1
 else
-    echo -e "\nDisk usage is $free_percentage, free disk space is $free_readable. Enough to install BrewPi\n"
+    echo -e "\nZużycie dysku wynosi $free_percentage, dostępna przestrzeń to $free_readable. To wystarczy aby zainstalować BrewPi\n"
 fi
 
 
-echo "To accept the default answer, just press Enter."
-echo "The default is capitalized in a Yes/No question: [Y/n]"
-echo "or shown between brackets for other questions: [default]"
+echo "Aby zaakceptować domyślną odpowiedź, wciśnij ENTER."
+echo "Odpowiedź domyślna wyróżniona jest poprzez wielką literę w pytaniu Tak/Nie: [T/n]"
+echo "bądź pokazana w nawiasie kwadratowym: [domyślna]"
 
 date=$(date)
-read -p "The time is currently set to $date. Is this correct? [Y/n]" choice
+read -p "Aktualna data to $date. Czy jest właściwa? [T/n]" choice
 case "$choice" in
-  n | N | no | NO | No )
+  n | N | no | NO | No | nie | NIE | Nie )
     dpkg-reconfigure tzdata;;
   * )
 esac
@@ -132,84 +132,84 @@ esac
 ############
 ### Now for the install!
 ############
-echo -e "\n*** This script will first ask you where to install the brewpi python scripts and the web interface"
-echo "Hitting 'enter' will accept the default option in [brackets] (recommended)."
+echo -e "\n*** Instalator zapyta Cię o ścieżkę zapisu skryptu python oraz interfejsu sieciowego"
+echo "Wciśnięcie 'ENTER' zaakceptuje domyślną opcję w [nawiasie kwadratowym] (zalecane)."
 
-echo -e "\nAny data in the following location will be ERASED during install!"
-read -p "Where would you like to install BrewPi? [/home/brewpi]: " installPath
+echo -e "\nJakiekolwiek dane w poniższej lokalizacji zostaną w czasie instalacji USUNIĘTE!"
+read -p "Proszę podać lokalizację instalacji skryptu BrewPi [/home/brewpi]: " installPath
 if [ -z "$installPath" ]; then
   installPath="/home/brewpi"
 else
   case "$installPath" in
-    y | Y | yes | YES| Yes )
+    y | Y | yes | YES| Yes | T | t | tak | TAK | Tak )
         installPath="/home/brewpi";; # accept default when y/yes is answered
     * )
         ;;
   esac
 fi
-echo "Installing script in $installPath";
+echo "Skrypt zostanie zainstalowany w $installPath";
 
 if [ -d "$installPath" ]; then
   if [ "$(ls -A ${installPath})" ]; then
-    read -p "Install directory is NOT empty, are you SURE you want to use this path? [y/N] " yn
+    read -p "Podana ścieżka NIE JEST pusta. Czy na pewno użyć tej ścieżki? [t/N] " yn
     case "$yn" in
-        y | Y | yes | YES| Yes ) echo "Ok, we warned you!";;
+        y | Y | yes | YES| Yes | T | t | TAK | Tak | tak ) echo "Wszystkie dane z podanej lokalizacji zostaną USUNIĘTE";;
         * ) exit;;
     esac
   fi
 else
   if [ "$installPath" != "/home/brewpi" ]; then
-    read -p "This path does not exist, would you like to create it? [Y/n] " yn
+    read -p "Podana ścieżka nie istnieje, czy utworzyć ścieżkę o danej nazwie? [T/n] " yn
     if [ -z "$yn" ]; then
       yn="y"
     fi
     case "$yn" in
-        y | Y | yes | YES| Yes ) echo "Creating directory..."; mkdir -p "$installPath";;
-        * ) echo "Aborting..."; exit;;
+        y | Y | yes | YES| Yes | T | t | TAK | Tak | tak ) echo "Tworzenie ścieżki..."; mkdir -p "$installPath";;
+        * ) echo "Przerywanie..."; exit;;
     esac
   fi
 fi
 
-echo "Searching for default web install location..."
+echo "Poszukiwanie domyślnej lokalizacji instalacji interfejsu sieciowego..."
 webPath=`grep DocumentRoot /etc/apache2/sites-enabled/000-default* |xargs |cut -d " " -f2`
 echo "Found $webPath"
 
 
-echo -e "\nAny data in the following location will be ERASED during install!"
-read -p "Where would you like to copy the BrewPi web files to? [$webPath]: " webPathInput
+echo -e "\nWszystkie dane z podanej lokalizacji zostaną USUNIĘTE!"
+read -p "Proszę podać lokalizację instalacji interfejsu sieciowego BrewPi [$webPath]: " webPathInput
 
 if [ "$webPathInput" ]; then
     webPath=${webPathInput}
 fi
 
-echo "Installing web interface in $webPath";
+echo "Instalacja interfejsu przeglądarkowego w $webPath";
 
 if [ -d "$webPath" ]; then
   if [ "$(ls -A ${webPath})" ]; then
-    read -p "Web directory is NOT empty, are you SURE you want to use this path? [y/N] " yn
+    read -p "Podana ścieżka NIE JEST pusta. Czy na pewno użyć tej ścieżki? [t/N] " yn
     case "$yn" in
-        y | Y | yes | YES| Yes ) echo "Ok, we warned you!";;
+        y | Y | yes | YES| Yes ) echo "Wszystkie dane z podanej lokalizacji zostaną USUNIĘTE!";;
         * ) exit;;
     esac
   fi
 else
-  read -p "This path does not exist, would you like to create it? [Y/n] " yn
+  read -p "Podana ścieżka nie istnieje, czy utworzyć ścieżkę o danej nazwie? [T/n] " yn
   if [ -z "$yn" ]; then
     yn="y"
   fi
   case "$yn" in
-      y | Y | yes | YES| Yes ) echo "Creating directory..."; mkdir -p "$webPath";;
-      * ) echo "Aborting..."; exit;;
+      y | Y | yes | YES| Yes | T | t | TAK | Tak | tak ) echo "Tworzenie ścieżki..."; mkdir -p "$webPath";;
+      * ) echo "Przerywanie..."; exit;;
   esac
 fi
 
 ############
 ### Create/configure user accounts
 ############
-echo -e "\n***** Creating and configuring user accounts... *****"
+echo -e "\n***** Tworzenie i konfiguracja konta użytkownika... *****"
 chown -R www-data:www-data "$webPath"||die
 if id -u brewpi >/dev/null 2>&1; then
-  echo "User 'brewpi' already exists, skipping..."
+  echo "Nazwa użytkownika 'brewpi' jest już zajęta, pomijanie..."
 else
   useradd -G www-data,dialout brewpi||die
   echo -e "brewpi\nbrewpi\n" | passwd brewpi||die
@@ -218,17 +218,17 @@ fi
 usermod -a -G www-data pi||die
 usermod -a -G brewpi pi||die
 
-echo -e "\n***** Checking install directories *****"
+echo -e "\n***** Sprawdzanie ścieżek instalacji *****"
 
 if [ -d "$installPath" ]; then
-  echo "$installPath already exists"
+  echo "$installPath już istnieje"
 else
   mkdir -p "$installPath"
 fi
 
 dirName=$(date +%F-%k:%M:%S)
 if [ "$(ls -A ${installPath})" ]; then
-  echo "Script install directory is NOT empty, backing up to this users home dir and then deleting contents..."
+  echo "Lokalizacja instalacji skryptu NIE JEST pusta, następuje przywracanie lokalizacji domowej obecnego użytkownika oraz usuwanie zawartości..."
     if ! [ -a ~/brewpi-backup/ ]; then
       mkdir -p ~/brewpi-backup
     fi
@@ -239,12 +239,12 @@ if [ "$(ls -A ${installPath})" ]; then
 fi
 
 if [ -d "$webPath" ]; then
-  echo "$webPath already exists"
+  echo "$webPath już istnieje"
 else
   mkdir -p "$webPath"
 fi
 if [ "$(ls -A ${webPath})" ]; then
-  echo "Web directory is NOT empty, backing up to this users home dir and then deleting contents..."
+  echo "Lokalizacja instalacji interfejsu sieciowego NIE JEST pusta, następuje przywracanie lokalizacji domowej obecnego użytkownika oraz usuwanie zawartości..."
   if ! [ -a ~/brewpi-backup/ ]; then
     mkdir -p ~/brewpi-backup
   fi
@@ -269,7 +269,7 @@ find "$webPath" -type d -exec chmod g+rwxs {} \;||die
 ############
 ### Clone BrewPi repositories
 ############
-echo -e "\n***** Downloading most recent BrewPi codebase... *****"
+echo -e "\n***** Pobieranie najaktualniejszego repozytorium kodu BrewPi... *****"
 cd "$installPath"
 sudo -u brewpi git clone https://github.com/BrewPi/brewpi-script "$installPath"||die
 cd "$webPath"
@@ -279,7 +279,7 @@ sudo -u www-data git clone https://github.com/BrewPi/brewpi-www "$webPath"||die
 ### If non-default paths are used, update config files accordingly
 ##########
 if [[ "$installPath" != "/home/brewpi" ]]; then
-    echo -e "\n***** Using non-default path for the script dir, updating config files *****"
+    echo -e "\n***** Używanie niedomyślnej ścieżki instalacji skryptu, aktualizacjia plików konfiguracyjnych *****"
     echo "scriptPath = $installPath" >> "$installPath"/settings/config.cfg
 
     echo "<?php " >> "$webPath"/config_user.php
@@ -287,7 +287,7 @@ if [[ "$installPath" != "/home/brewpi" ]]; then
 fi
 
 if [[ "$webPath" != "/var/www" ]]; then
-    echo -e "\n***** Using non-default path for the web dir, updating config files *****"
+    echo -e "\n***** Używanie niedomyślnej ścieżki instalacji interfejsu sieciowego, aktualizacjia plików konfiguracyjnych *****"
     echo "wwwPath = $webPath" >> "$installPath"/settings/config.cfg
 fi
 
@@ -295,21 +295,21 @@ fi
 ############
 ### Fix permissions
 ############
-echo -e "\n***** Running fixPermissions.sh from the script repo. *****"
+echo -e "\n***** Uruchamianie fixPermissions.sh z bazy instalacyjnej. *****"
 if [ -a "$installPath"/utils/fixPermissions.sh ]; then
    bash "$installPath"/utils/fixPermissions.sh
 else
-   echo "ERROR: Could not find fixPermissions.sh!"
+   echo "BŁĄD: Nie znaleziono fixPermissions.sh!"
 fi
 
 ############
 ### Install CRON job
 ############
-echo -e "\n***** Running updateCron.sh from the script repo. *****"
+echo -e "\n***** Uruchamianie updateCron.sh z bazy instalacyjnej. *****"
 if [ -a "$installPath"/utils/updateCron.sh ]; then
    bash "$installPath"/utils/updateCron.sh
 else
-   echo "ERROR: Could not find updateCron.sh!"
+   echo "BŁĄD: Nie znaleziono updateCron.sh!"
 fi
 
 ############
@@ -318,21 +318,21 @@ fi
 defaultKey="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLNC9E7YjW0Q9btd9aUoAg++/wa06LtBMc1eGPTdu29t89+4onZk1gPGzDYMagHnuBjgBFr4BsZHtng6uCRw8fIftgWrwXxB6ozhD9TM515U9piGsA6H2zlYTlNW99UXLZVUlQzw+OzALOyqeVxhi/FAJzAI9jPLGLpLITeMv8V580g1oPZskuMbnE+oIogdY2TO9e55BWYvaXcfUFQAjF+C02Oo0BFrnkmaNU8v3qBsfQmldsI60+ZaOSnZ0Hkla3b6AnclTYeSQHx5YqiLIFp0e8A1ACfy9vH0qtqq+MchCwDckWrNxzLApOrfwdF4CSMix5RKt9AF+6HOpuI8ZX root@raspberrypi"
 
 if grep -q "$defaultKey" /etc/ssh/ssh_host_rsa_key.pub; then
-  echo "Replacing default SSH keys. You will need to remove the previous key from known hosts on any clients that have previously connected to this rpi."
+  echo "Modyfikacja domyślnych kluczy SSH. Należy usunąć poprzednie You will need to remove the previous key from known hosts on any clients that have previously connected to this rpi."
   if rm -f /etc/ssh/ssh_host_* && dpkg-reconfigure openssh-server; then
-     echo "Default SSH keys replaced."
+     echo "Domyślne klucze SSH zostały zmodyfikowane."
   else
-    echo "ERROR - Unable to replace SSH key. You probably want to take the time to do this on your own."
+    echo "BŁĄD: Nie udało się zmodyfikować klucza SSH. Należy przeprowadzić tę zmianę manualnie."
   fi
 fi
 
-echo -e "Done installing BrewPi!"
+echo -e "Zakończono instalację BrewPi!"
 
 echo -e "\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
-echo -e "Review the log above for any errors, otherwise, your initial environment install is complete!"
-echo -e "\nYou are currently using the password 'brewpi' for the brewpi user. If you wish to change this, type 'sudo passwd brewpi' now, and follow the prompt"
-echo -e "\nTo view your BrewPi web interface, enter http://`/sbin/ifconfig|egrep -A 1 'eth|wlan'|awk -F"[Bcast:]" '/inet addr/ {print $4}'` into your web browser"
-echo -e "\nHappy Brewing!"
+echo -e "Przejrzyj powyższy log w poszukiwaniu błędów, instalacja środowiska została ukończona!"
+echo -e "\nDla użytkownika ustawiono hasło 'brewpi'. Aby je zmienić, użyj komendy 'sudo passwd brewpi' i postępuj zgodnie z poleceniami"
+echo -e "\nAby wejść do interfejsu sieciowego, wprowadź w przeglądarce adres http://`/sbin/ifconfig|egrep -A 1 'eth|wlan'|awk -F"[Bcast:]" '/inet addr/ {print $4}'`"
+echo -e "\nPomyślnego Warzenia!"
 
 
 
