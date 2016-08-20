@@ -273,9 +273,9 @@ find "$webPath" -type d -exec chmod g+rwxs {} \;||die
 ############
 echo -e "\n***** Pobieranie najaktualniejszego repozytorium kodu BrewPi... *****"
 cd "$installPath"
-sudo -u brewpi git clone https://github.com/BrewPi/brewpi-script "$installPath"||die
+sudo -u brewpi git clone https://github.com/kinsl4yer/brewpi-script "$installPath"||die
 cd "$webPath"
-sudo -u www-data git clone https://github.com/BrewPi/brewpi-www "$webPath"||die
+sudo -u www-data git clone https://github.com/kinsl4yer/brewpi-www "$webPath"||die
 
 ###########
 ### If non-default paths are used, update config files accordingly
@@ -324,7 +324,7 @@ if grep -q "$defaultKey" /etc/ssh/ssh_host_rsa_key.pub; then
   if rm -f /etc/ssh/ssh_host_* && dpkg-reconfigure openssh-server; then
      echo "Domyślne klucze SSH zostały zmodyfikowane."
   else
-    echo "BŁĄD: Nie udało się zmodyfikować klucza SSH. Należy przeprowadzić tę zmianę manualnie."
+    echo "BŁĄD: Nie udało się zmodyfikować klucza SSH. Należy przeprowadzić tę zmianę ręcznie."
   fi
 fi
 
