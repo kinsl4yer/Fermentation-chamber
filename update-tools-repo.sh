@@ -12,16 +12,16 @@ changes=$(git log HEAD..origin/"$active_branch" --oneline)
 
 if [ -z "$changes" ]; then
     # no changes
-    echo "$myPath is up-to-date."
+    echo "$myPath znajduje się w najnowszej wersji."
     exit 0
 fi
 
-echo "$myPath is not up-to-date, updating..."
+echo "$myPath nie znajduje się w najnowszej wersji, aktualizacja..."
 git pull;
 if [ $? -ne 0 ]; then
     echo ""
-    echo "An error occurred during git pull. Please update $myPath manually."
-    echo  "You can stash your local changes and then pull: cd $myPath; sudo git stash; sudo git pull"
+    echo "BŁĄD: Podczas próby pobrania plików wystąpił nieoczekiwany błąd. Należy dokonać manualnej aktualizacji $myPath"
+    echo  "Możliwe jest pobranie aktualizacji z adresu lokalnego poprzez użycie komend: cd $myPath; sudo git stash; sudo git pull"
     echo  ""
 fi
 exit 1
