@@ -1,10 +1,10 @@
 brewpi-tools
 ============
 
-Various tools to setup/update/configure BrewPi
+W niniejszym repozytorium znajdują się różne narzędzia do instalacji/aktualizacji/konfiguracji BrewPi:
 
-* install.sh - This is a stand-alone bash script that will install BrewPi onto a Raspbian distro
+* install.sh - Samodzielny skrypt bash instalujący BrewPi na dystrybucji Raspbian
 
-* brewpi.tcl - This is a TCL script you may load on your eggdrop IRC bot to interact with your BrewPi setup via IRC! Amaze all your friends with the current status of your beer!
+* brewpi.tcl - Skrypt TCL, który możesz załadować do swojego IRC-owego bota Eggdrop aby porozumiewać się z BrewPi poprzez IRC. Zaskocz wszystkich swoich znajomych aktualnym stanem swojej warki!
 
-* udpater.py - This is a python script that will check for any updates to BrewPi and, upon request, install them to your Pi
+* udpater.py - Skrypt python, który sprawdza dostępność aktualizacji dla BrewPi oraz zainstaluje je na żądanie na Twoim Raspberry Pi
